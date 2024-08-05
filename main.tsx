@@ -13,6 +13,9 @@ app
     // makes a nice Readable Web Stream https://react.dev/reference/react-dom/server/renderToReadableStream
     const stream = await renderToReadableStream(<App />, {
       bootstrapModules: [CLIENT_BUNDLE_FNAME], // tell the browser where to find the client javascript
+      bootstrapScripts: [
+        "https://cdn.tailwindcss.com",
+      ],
     });
     return new Response(stream, { headers: { "content-type": "text/html" } });
   })
