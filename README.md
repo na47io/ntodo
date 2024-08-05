@@ -1,6 +1,6 @@
 # ntodo
 
-__n__ested __todo__ list 😄
+__n__ested **todo** list 😄
 
 features:
 
