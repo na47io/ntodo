@@ -9,10 +9,14 @@ features:
 
 that's it
 
+## quirks
+
+- multiline tasks not allowed. if you need multiple lines you're either waffling or not being granular enough. probably both!
+
 ## ideas
 
 1. vim bindings (plsssssss santa)
-2.
+2. PREACT AND SIGNALS MAYBE??? hooks are one-way? i think. and thats a problem for adding multiple tasks.
 
 ## bad ideas
 

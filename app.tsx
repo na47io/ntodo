@@ -37,6 +37,7 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                 />
                 <span
                     onClick={(e) => e.preventDefault()}
+                    onKeyDown={blurOnEnter}
                     contentEditable={!item.completed}
                     style={{
                         "textDecoration": item.completed
@@ -45,13 +46,13 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                     }}
                 >
                     {item.text}
-                    <button
-                        disabled={item.completed}
-                        onClick={() => onAddChild(item.id)}
-                    >
-                        ⬇️
-                    </button>
                 </span>
+                <button
+                    disabled={item.completed}
+                    onClick={() => onAddChild(item.id)}
+                >
+                    ⬇️
+                </button>
             </label>
             {hasChildren && (
                 <div>
@@ -71,6 +72,15 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
         </div>
     );
 };
+
+function blurOnEnter(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        // save editing
+        e.currentTarget.blur();
+    }
+}
+
 const NestedTodoList = () => {
     const [todos, setTodos] = useState<Todo[]>([
         {
@@ -170,9 +180,25 @@ const NestedTodoList = () => {
         setTodos(updateTodo(todos));
     };
 
+    const getCompletedPercentage = (todos: Todo[]) => {
+        const allTodos = todos.flatMap((todo) => {
+            const children = todo.children ?? [];
+            return [todo, ...children];
+        });
+        const completed = allTodos.filter((todo) => todo.completed).length;
+
+        return `${completed}/${allTodos.length}`;
+    };
+
     return (
         <div>
-            <h1>n-todo</h1>
+            <h1
+                contentEditable={true}
+                onKeyDown={blurOnEnter}
+            >
+                n-todo
+            </h1>
+            <h2>Completed: {getCompletedPercentage(todos)}</h2>
             {todos.map((todo) => (
                 <TodoItem
                     key={todo.id}
