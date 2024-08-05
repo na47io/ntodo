@@ -1,7 +1,7 @@
+/** @jsxImportSource https://esm.sh/preact */
 // this file will pretty much always look the same
-import { createElement } from "https://esm.sh/react";
-import { hydrateRoot } from "https://esm.sh/react-dom/client";
+import { hydrate } from "https://esm.sh/preact";
 import App from "./app.tsx";
 
 //@ts-ignore - this code runs in the browser where `document` is available
-hydrateRoot(document, createElement(App));
+hydrate(<App />, document.getElementById("root"));

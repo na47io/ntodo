@@ -1,5 +1,6 @@
-/** @jsxImportSource https://esm.sh/react */
-import React, { useState } from "https://esm.sh/react";
+/** @jsxImportSource https://esm.sh/preact */
+import React from "https://esm.sh/preact/compat";
+import { signal } from "../../Library/Caches/deno/npm/registry.npmjs.org/@preact/signals-core/1.8.0/dist/signals-core.d.ts";
 
 interface Todo {
     id: string; // UUID
@@ -82,7 +83,7 @@ function blurOnEnter(e: React.KeyboardEvent) {
 }
 
 const NestedTodoList = () => {
-    const [todos, setTodos] = useState<Todo[]>([
+    const todos: Todo[] = [
         {
             id: crypto.randomUUID(),
             text: "Main Task 1",
@@ -124,7 +125,9 @@ const NestedTodoList = () => {
                 },
             ],
         },
-    ]);
+    ];
+
+    const setTodos = (newTodos: Todo[]) => {};
 
     const todoToggle = (id: string) => {
         const updateTodo = (todos: Todo[]): Todo[] => {
@@ -177,6 +180,7 @@ const NestedTodoList = () => {
             });
         };
 
+        console.log("adding child!");
         setTodos(updateTodo(todos));
     };
 
@@ -212,23 +216,6 @@ const NestedTodoList = () => {
     );
 };
 
-const App = () => {
-    return (
-        <html>
-            <head>
-                <meta charSet="utf-8" />
-                <meta
-                    name="viewport"
-                    content="width=device-width, initial-scale=1"
-                />
-                <link rel="stylesheet" href="/styles.css"></link>
-                <title>My app</title>
-            </head>
-            <body>
-                <NestedTodoList />
-            </body>
-        </html>
-    );
-};
+const App = () => <NestedTodoList />;
 
 export default App;
