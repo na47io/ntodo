@@ -1,5 +1,5 @@
 import { computed, Signal, signal } from "@preact/signals";
-import { Todo, todoGetCounts } from "./todo.ts";
+import { Todo, todoGetCounts } from "@/todo.ts";
 import { createContext } from "preact";
 
 export interface State {

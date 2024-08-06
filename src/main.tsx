@@ -2,14 +2,14 @@
 import { Hono } from "hono";
 import { bundle } from "@deno/emit";
 import { renderToString } from "preact-render-to-string";
-import { App } from "./app.tsx";
-import { createAppState } from "./model.ts";
-import { Todo } from "./todo.ts";
+import { App } from "@/app.tsx";
+import { createAppState } from "@/model.ts";
+import { Todo } from "@/todo.ts";
 
 const CLIENT_BUNDLE_FNAME = "client.tsx";
 
 const importMap = Deno.readTextFileSync(
-  new URL("./import_map.json", import.meta.url),
+  new URL("../import_map.json", import.meta.url),
 );
 
 const app = new Hono({});

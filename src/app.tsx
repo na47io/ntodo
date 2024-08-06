@@ -1,7 +1,7 @@
 /** @jsxImportSource preact */
 import { Todo, todoAdd, todoAddChild, todoToggle } from "./todo.ts";
 import { useContext } from "preact/hooks";
-import { AppContext, State } from "./model.ts";
+import { AppContext, State } from "@/model.ts";
 
 function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
