@@ -5,6 +5,7 @@ import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
 import { createAppState } from "@/model.ts";
 import { Todo } from "@/todo.ts";
+import { Landing } from "@/components/Landing.tsx";
 
 const INITIAL_TODOS: Todo[] = [
   {
@@ -63,15 +64,7 @@ const kv = await Deno.openKv();
 app
   .get(
     "/",
-    async (_c) => {
-      const projectId = "123";
-      const result = await kv.get(["project", projectId]);
-      const todos = result.value as Todo[];
-
-      // appState has signals and stuff, initialState is a DTO
-      const initialState = { projectId, initialTodos: todos ?? INITIAL_TODOS };
-      const appState = createAppState(initialState);
-
+    (_c) => {
       const html = `
     <!DOCTYPE html>
     
@@ -80,26 +73,32 @@ app
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Todo App</title>
-        <script type="importmap">
-        ${importMap}
-        </script>
-        <script>
-        window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
-        </script>
-        <script type="module" src="${CLIENT_BUNDLE_FNAME}"></script>
     </head>
 
     <body>
-        <div id="root">${renderToString(<App initialState={appState} />)}</div>
+        <div id="root">${renderToString(<Landing />)}</div>
     </body>
     `;
       return new Response(html, { headers: { "content-type": "text/html" } });
     },
   )
+  .get("/createProject", (c) => {
+    const projectIdRaw = new URL(c.req.url).searchParams.get("projectId");
+    if (!projectIdRaw) {
+      return new Response("projectId is required", { status: 400 });
+    }
+
+    const projectId = projectIdRaw.trim().replace(/\s+/g, "-").toLowerCase();
+    return new Response(null, {
+      status: 302,
+      headers: { location: `/projects/${projectId}` },
+    });
+  })
   .get(
     "/projects/:projectId",
     async (c) => {
-      const projectId = c.req.param("projectId");
+      const projectIdRaw = c.req.param("projectId");
+      const projectId = projectIdRaw.trim().replace(/\s+/g, "-").toLowerCase();
       const result = await kv.get(["project", projectId]);
       const todos = result.value as Todo[];
 
