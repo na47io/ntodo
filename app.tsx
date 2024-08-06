@@ -1,4 +1,4 @@
-/** @jsxImportSource https://esm.sh/preact */
+/** @jsxImportSource preact */
 import { computed, signal } from "@preact/signals";
 import {
     Todo,

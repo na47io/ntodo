@@ -1,4 +1,4 @@
-/** @jsxImportSource https://esm.sh/preact */
+/** @jsxImportSource preact */
 import { Hono } from "hono";
 import { bundle } from "@deno/emit";
 import { renderToString } from "https://esm.sh/preact-render-to-string@6.5.7";
@@ -10,7 +10,7 @@ const importMap = Deno.readTextFileSync(
   new URL("./import_map.json", import.meta.url),
 );
 
-console.log(importMap);
+console.log(JSON.parse(importMap));
 
 const html = `
     <!DOCTYPE html>
@@ -45,11 +45,11 @@ app
       new URL(CLIENT_BUNDLE_FNAME, import.meta.url),
       {
         minify: true,
-        importMap: JSON.parse(importMap),
         compilerOptions: {
           "jsx": "react-jsx",
           "jsxImportSource": "preact",
         },
+        importMap: JSON.parse(importMap),
       },
     );
     return new Response(code, {
