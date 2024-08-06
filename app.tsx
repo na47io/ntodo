@@ -1,5 +1,4 @@
 /** @jsxImportSource https://esm.sh/preact */
-import React from "https://esm.sh/preact/compat";
 import { computed, signal } from "@preact/signals";
 
 interface Todo {
