@@ -1,6 +1,18 @@
 {
   "tasks": {
-    "dev": "deno run --unstable -A --watch src/main.tsx"
+    "dev": "deno run --unstable -A --watch src/main.tsx",
+    "bundle": "deno run --allow-write --allow-read --allow-env --allow-run src/bundle.ts",
+    "deploy": "deno task bundle && deployctl deploy"
   },
-  "importMap": "./import_map.json"
+  "importMap": "./import_map.json",
+  "deploy": {
+    "project": "8f15045b-ef8e-4c03-a20a-6a6b443859e5",
+    "exclude": ["**/node_modules", "**/node_modules"],
+    "include": ["**/*"],
+    "entrypoint": "src/main.tsx"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "preact"
+  }
 }

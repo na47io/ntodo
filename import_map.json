@@ -9,6 +9,8 @@
     "preact/jsx-runtime": "https://esm.sh/preact/jsx-runtime?dts&external=preact",
     "preact/jsx-dev-runtime": "https://esm.sh/preact/jsx-dev-runtime?dts&external=preact",
     "preact-render-to-string": "https://esm.sh/preact-render-to-string@6.5.7?external=preact",
+    "esbuild": "https://deno.land/x/esbuild@v0.17.18/mod.js",
+    "esbuild-plugins-deno": "https://deno.land/x/esbuild_deno_loader@0.8.1/mod.ts",
     "@/": "./src/"
   }
 }

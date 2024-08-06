@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { hydrate } from "preact";
 import { App } from "@/app.tsx";
 import { createAppState, InitialState } from "@/model.ts";

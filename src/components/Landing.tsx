@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 function Docs() {
     return (
         <section>

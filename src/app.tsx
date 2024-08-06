@@ -1,4 +1,3 @@
-/** @jsxImportSource preact */
 import { Todo, todoAdd, todoAddChild, todoToggle } from "./todo.ts";
 import { useContext } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";

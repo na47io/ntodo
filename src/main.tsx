@@ -1,11 +1,10 @@
-/** @jsxImportSource preact */
 import { Hono } from "hono";
-import { bundle } from "@deno/emit";
 import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
 import { createAppState } from "@/model.ts";
 import { Todo } from "@/todo.ts";
 import { CreateNewForm, Landing } from "@/components/Landing.tsx";
+import { bundleClientForBrowser } from "@/bundle.ts";
 
 const INITIAL_TODOS: Todo[] = [
   {
@@ -51,7 +50,7 @@ const INITIAL_TODOS: Todo[] = [
   },
 ];
 
-const CLIENT_BUNDLE_FNAME = "client.tsx";
+const CLIENT_BUNDLE_FNAME = "/dist/bundle.js";
 
 const importMap = Deno.readTextFileSync(
   new URL("../import_map.json", import.meta.url),
@@ -153,7 +152,7 @@ app
         <script>
         window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
-        <script type="module" src="../${CLIENT_BUNDLE_FNAME}"></script>
+        <script type="module" src="${CLIENT_BUNDLE_FNAME}" async=""></script>
     </head>
 
     <body>
@@ -161,6 +160,7 @@ app
         <div id="root">${renderToString(<App initialState={appState} />)}</div>
       </main>
     </body>
+    </html>
     `;
       return new Response(html, {
         headers: { "content-type": "text/html" },
@@ -168,20 +168,15 @@ app
     },
   )
   .get(CLIENT_BUNDLE_FNAME, async (_c) => {
-    // when browser comes back for the client javascript
-    // bundle it and send back
-    const { code } = await bundle(
-      new URL(CLIENT_BUNDLE_FNAME, import.meta.url),
-      {
-        minify: true,
-        compilerOptions: {
-          "jsx": "react-jsx",
-          "jsxImportSource": "preact",
-        },
-        importMap: JSON.parse(importMap),
-      },
-    );
-    return new Response(code, {
+    // if we are not in Deno Deploy, bundle the client code
+    if (Deno.env.get("DENO_DEPLOYMENT_ID") === undefined) {
+      console.log("Bundling client code...");
+      await bundleClientForBrowser();
+    }
+
+    const bundle = await Deno.readTextFile("." + CLIENT_BUNDLE_FNAME);
+
+    return new Response(bundle, {
       headers: { "content-type": "application/javascript" },
     });
   })
