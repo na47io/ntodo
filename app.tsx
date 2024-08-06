@@ -142,11 +142,13 @@ const todoGetCounts = (todos: Todo[]) => {
     return countChildren(todos);
 };
 
-function blurOnEnter(e: React.KeyboardEvent) {
+function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
         e.preventDefault();
-        // save editing
-        e.currentTarget.blur();
+
+        if (e.currentTarget instanceof HTMLElement) {
+            e.currentTarget.blur();
+        }
     }
 }
 
