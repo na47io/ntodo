@@ -1,5 +1,5 @@
 /** @jsxImportSource https://esm.sh/preact */
-import { computed, Signal, signal } from "@preact/signals";
+import { computed, signal } from "@preact/signals";
 import {
     Todo,
     todoAdd,
@@ -56,6 +56,9 @@ const todos = signal<Todo[]>(INITIAL_TODOS);
 const getCompletedPercentage = computed(() => {
     return todoGetCounts(todos.value);
 });
+const setTodos = (newTodos: Todo[]) => {
+    todos.value = newTodos;
+};
 
 function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
@@ -77,20 +80,17 @@ function compose(...fns: Function[]) {
 // take the current state and return a function that will
 // 1. get the new state by a applying the state transform (partially applied to the current state)
 // 2. set the new state
-const handleTodoToggle = (todos: Signal<Todo[]>) =>
+const handleTodoToggle = (todos: Todo[]) =>
+    compose(todoToggle.bind(null, todos), setTodos);
+const handleTodoAddChild = (todos: Todo[]) =>
     compose(
-        todoToggle.bind(null, todos.value),
-        (newTodos: Todo[]) => todos.value = newTodos,
+        todoAddChild.bind(null, todos),
+        setTodos,
     );
-const handleTodoAddChild = (todos: Signal<Todo[]>) =>
+const handleAddTodo = (todos: Todo[]) =>
     compose(
-        todoAddChild.bind(null, todos.value),
-        (newTodos: Todo[]) => todos.value = newTodos,
-    );
-const handleAddTodo = (todos: Signal<Todo[]>) =>
-    compose(
-        todoAdd.bind(null, todos.value),
-        (newTodos: Todo[]) => todos.value = newTodos,
+        todoAdd.bind(null, todos),
+        setTodos,
     ); // dont need partial apply here
 
 const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
@@ -174,11 +174,11 @@ const NestedTodoList = () => {
                 <TodoItem
                     key={todo.id}
                     item={todo}
-                    onToggle={handleTodoToggle(todos)}
-                    onAddChild={handleTodoAddChild(todos)}
+                    onToggle={handleTodoToggle(todos.value)}
+                    onAddChild={handleTodoAddChild(todos.value)}
                 />
             ))}
-            <button onClick={handleAddTodo(todos)}>
+            <button onClick={handleAddTodo(todos.value)}>
                 Add Task
             </button>
         </div>
