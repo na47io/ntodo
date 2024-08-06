@@ -5,6 +5,49 @@ import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
 import { createAppState } from "@/model.ts";
 import { Todo } from "@/todo.ts";
+const INITIAL_TODOS: Todo[] = [
+  {
+    id: crypto.randomUUID(),
+    text: "Main Task 1",
+    completed: false,
+    children: [
+      {
+        id: crypto.randomUUID(),
+        text: "Subtask 1.1",
+        completed: false,
+      },
+      {
+        id: crypto.randomUUID(),
+        text: "Subtask 1.2",
+        completed: false,
+      },
+    ],
+  },
+  {
+    id: crypto.randomUUID(),
+    text: "Main Task 2",
+    completed: false,
+    children: [
+      {
+        id: crypto.randomUUID(),
+        text: "Subtask 2.1",
+        completed: false,
+      },
+      {
+        id: crypto.randomUUID(),
+        text: "Subtask 2.2",
+        completed: false,
+        children: [
+          {
+            id: crypto.randomUUID(),
+            text: "Sub-subtask 2.2.1",
+            completed: false,
+          },
+        ],
+      },
+    ],
+  },
+];
 
 const CLIENT_BUNDLE_FNAME = "client.tsx";
 
@@ -14,54 +57,14 @@ const importMap = Deno.readTextFileSync(
 
 const app = new Hono({});
 
+const kv = await Deno.openKv();
+
 app
   .get(
     "/",
-    (_c) => {
-      // TODO: get this from the server baby
-      const INITIAL_TODOS: Todo[] = [
-        {
-          id: crypto.randomUUID(),
-          text: "Main Task 1",
-          completed: false,
-          children: [
-            {
-              id: crypto.randomUUID(),
-              text: "Subtask 1.1",
-              completed: false,
-            },
-            {
-              id: crypto.randomUUID(),
-              text: "Subtask 1.2",
-              completed: false,
-            },
-          ],
-        },
-        {
-          id: crypto.randomUUID(),
-          text: "Main Task 2",
-          completed: false,
-          children: [
-            {
-              id: crypto.randomUUID(),
-              text: "Subtask 2.1",
-              completed: false,
-            },
-            {
-              id: crypto.randomUUID(),
-              text: "Subtask 2.2",
-              completed: false,
-              children: [
-                {
-                  id: crypto.randomUUID(),
-                  text: "Sub-subtask 2.2.1",
-                  completed: false,
-                },
-              ],
-            },
-          ],
-        },
-      ];
+    async (_c) => {
+      const result = await kv.get(["project", "123"]);
+      const todos = result.value as Todo[];
       const html = `
     <!DOCTYPE html>
     
@@ -74,14 +77,14 @@ app
         ${importMap}
         </script>
         <script>
-        window.__INITIAL_STATE__ = ${JSON.stringify(INITIAL_TODOS)};
+        window.__INITIAL_STATE__ = ${JSON.stringify(todos)};
         </script>
         <script type="module" src="${CLIENT_BUNDLE_FNAME}"></script>
     </head>
 
     <body>
         <div id="root">${
-        renderToString(<App initialState={createAppState(INITIAL_TODOS)} />)
+        renderToString(<App initialState={createAppState(todos)} />)
       }</div>
     </body>
     `;
@@ -105,6 +108,14 @@ app
     return new Response(code, {
       headers: { "content-type": "application/javascript" },
     });
+  })
+  .post("api/todos", async (c) => {
+    const { todos, projectId } = await c.req.json();
+    const { ok } = await kv.set(["project", projectId], todos);
+    if (!ok) {
+      return new Response("error", { status: 500 });
+    }
+    return new Response("ok");
   });
 
 Deno.serve({ port: 8080 }, app.fetch);

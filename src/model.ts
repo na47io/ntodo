@@ -1,4 +1,4 @@
-import { computed, Signal, signal } from "@preact/signals";
+import { computed, effect, Signal, signal } from "@preact/signals";
 import { Todo, todoGetCounts } from "@/todo.ts";
 import { createContext } from "preact";
 
@@ -21,6 +21,24 @@ export function createAppState(
 
     const counts = computed(() => {
         return todoGetCounts(todos.value);
+    });
+
+    effect(() => {
+        // don't run this on the server
+        if (typeof Deno === "undefined") {
+            fetch("api/todos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    todos: todos.value,
+                    projectId: "123",
+                }),
+            }).then((res) => {
+                console.log("saved");
+            });
+        }
     });
 
     return {
