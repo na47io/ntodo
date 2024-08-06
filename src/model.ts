@@ -33,7 +33,7 @@ export function createAppState(
     effect(() => {
         // don't run this on the server
         if (typeof Deno === "undefined") {
-            fetch("api/todos", {
+            fetch("/api/todos", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

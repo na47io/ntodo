@@ -96,6 +96,43 @@ app
       return new Response(html, { headers: { "content-type": "text/html" } });
     },
   )
+  .get(
+    "/projects/:projectId",
+    async (c) => {
+      const projectId = c.req.param("projectId");
+      const result = await kv.get(["project", projectId]);
+      const todos = result.value as Todo[];
+
+      // appState has signals and stuff, initialState is a DTO
+      const initialState = { projectId, initialTodos: todos ?? INITIAL_TODOS };
+      const appState = createAppState(initialState);
+
+      const html = `
+    <!DOCTYPE html>
+    
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo App</title>
+        <script type="importmap">
+        ${importMap}
+        </script>
+        <script>
+        window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
+        </script>
+        <script type="module" src="../${CLIENT_BUNDLE_FNAME}"></script>
+    </head>
+
+    <body>
+        <div id="root">${renderToString(<App initialState={appState} />)}</div>
+    </body>
+    `;
+      return new Response(html, {
+        headers: { "content-type": "text/html" },
+      });
+    },
+  )
   .get(CLIENT_BUNDLE_FNAME, async (_c) => {
     // when browser comes back for the client javascript
     // bundle it and send back

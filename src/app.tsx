@@ -114,13 +114,7 @@ function Todos() {
 
     return (
         <div>
-            <h1
-                contentEditable={true}
-                onKeyDown={blurOnEnter}
-            >
-                n-todo
-            </h1>
-            <h2>Project: {state.projectId}</h2>
+            <h1>Project: {state.projectId}</h1>
             <h2>Completed: {completed} / {total}</h2>
             {todos.value.map((todo) => (
                 <TodoItem
