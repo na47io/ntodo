@@ -57,12 +57,11 @@ const todos = signal<Todo[]>(INITIAL_TODOS);
 const getCompletedPercentage = computed(() => {
     return todoGetCounts(todos.value);
 });
-
 const setTodos = (newTodos: Todo[]) => {
     todos.value = newTodos;
 };
 
-const todoToggle = (id: string) => {
+const todoToggle = (todos: Todo[], id: string): Todo[] => {
     const updateTodo = (todos: Todo[]): Todo[] => {
         return todos.map((todo) => {
             if (todo.id === id) {
@@ -75,22 +74,20 @@ const todoToggle = (id: string) => {
         });
     };
 
-    setTodos(updateTodo(todos.value));
+    return updateTodo(todos);
 };
 
-const todoAdd = () => {
-    setTodos([
-        ...todos.value,
-        {
-            id: crypto.randomUUID(),
-            text: "New Task",
-            completed: false,
-            children: [],
-        },
-    ]);
-};
+const todoAdd = (todos: Todo[]): Todo[] => [
+    ...todos,
+    {
+        id: crypto.randomUUID(),
+        text: "New Task",
+        completed: false,
+        children: [],
+    },
+];
 
-const todoAddChild = (id: string) => {
+const todoAddChild = (todos: Todo[], id: string): Todo[] => {
     const updateTodo = (todos: Todo[]): Todo[] => {
         return todos.map((todo) => {
             if (todo.id === id) {
@@ -113,10 +110,10 @@ const todoAddChild = (id: string) => {
         });
     };
 
-    setTodos(updateTodo(todos.value));
+    return updateTodo(todos);
 };
 
-const todoGetCounts = (todos: Todo[]) => {
+const todoGetCounts = (todos: Todo[]): [number, number] => {
     const countChildren = (todos: Todo[]): [number, number] => {
         if (todos.length === 0) {
             return [0, 0];
@@ -151,6 +148,29 @@ function blurOnEnter(e: KeyboardEvent) {
         }
     }
 }
+
+// heretic left-side composition
+// deno-lint-ignore ban-types
+function compose(...fns: Function[]) {
+    // deno-lint-ignore no-explicit-any
+    return (x: any) => fns.reduce((acc, fn) => fn(acc), x);
+}
+
+// take the current state and return a function that will
+// 1. get the new state by a applying the state transform (partially applied to the current state)
+// 2. set the new state
+const handleTodoToggle = (todos: Todo[]) =>
+    compose(todoToggle.bind(null, todos), setTodos);
+const handleTodoAddChild = (todos: Todo[]) =>
+    compose(
+        todoAddChild.bind(null, todos),
+        setTodos,
+    );
+const handleAddTodo = (todos: Todo[]) =>
+    compose(
+        todoAdd.bind(null, todos),
+        setTodos,
+    ); // dont need partial apply here
 
 const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     item: Todo;
@@ -233,11 +253,13 @@ const NestedTodoList = () => {
                 <TodoItem
                     key={todo.id}
                     item={todo}
-                    onToggle={todoToggle}
-                    onAddChild={todoAddChild}
+                    onToggle={handleTodoToggle(todos.value)}
+                    onAddChild={handleTodoAddChild(todos.value)}
                 />
             ))}
-            <button onClick={todoAdd}>Add Task</button>
+            <button onClick={handleAddTodo(todos.value)}>
+                Add Task
+            </button>
         </div>
     );
 };
