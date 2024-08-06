@@ -9,6 +9,147 @@ interface Todo {
     children?: Todo[];
 }
 
+const INITIAL_TODOS: Todo[] = [
+    {
+        id: crypto.randomUUID(),
+        text: "Main Task 1",
+        completed: false,
+        children: [
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 1.1",
+                completed: false,
+            },
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 1.2",
+                completed: false,
+            },
+        ],
+    },
+    {
+        id: crypto.randomUUID(),
+        text: "Main Task 2",
+        completed: false,
+        children: [
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 2.1",
+                completed: false,
+            },
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 2.2",
+                completed: false,
+                children: [
+                    {
+                        id: crypto.randomUUID(),
+                        text: "Sub-subtask 2.2.1",
+                        completed: false,
+                    },
+                ],
+            },
+        ],
+    },
+];
+
+const todos = signal<Todo[]>(INITIAL_TODOS);
+const getCompletedPercentage = computed(() => {
+    return todoGetCounts(todos.value);
+});
+
+const setTodos = (newTodos: Todo[]) => {
+    todos.value = newTodos;
+};
+
+const todoToggle = (id: string) => {
+    const updateTodo = (todos: Todo[]): Todo[] => {
+        return todos.map((todo) => {
+            if (todo.id === id) {
+                const newCompleted = !todo.completed;
+                return { ...todo, completed: newCompleted };
+            } else if (todo.children) {
+                return { ...todo, children: updateTodo(todo.children) };
+            }
+            return todo;
+        });
+    };
+
+    setTodos(updateTodo(todos.value));
+};
+
+const todoAdd = () => {
+    setTodos([
+        ...todos.value,
+        {
+            id: crypto.randomUUID(),
+            text: "New Task",
+            completed: false,
+            children: [],
+        },
+    ]);
+};
+
+const todoAddChild = (id: string) => {
+    const updateTodo = (todos: Todo[]): Todo[] => {
+        return todos.map((todo) => {
+            if (todo.id === id) {
+                return {
+                    ...todo,
+                    children: [
+                        ...todo.children ?? [],
+                        {
+                            id: crypto.randomUUID(),
+                            text: "New Subtask",
+                            completed: false,
+                            children: [],
+                        },
+                    ],
+                };
+            } else if (todo.children) {
+                return { ...todo, children: updateTodo(todo.children) };
+            }
+            return todo;
+        });
+    };
+
+    setTodos(updateTodo(todos.value));
+};
+
+const todoGetCounts = (todos: Todo[]) => {
+    const countChildren = (todos: Todo[]): [number, number] => {
+        if (todos.length === 0) {
+            return [0, 0];
+        }
+
+        // recursive count
+        return todos.reduce((acc, todo) => {
+            if (todo.completed) {
+                acc[0] += 1;
+            }
+            acc[1] += 1;
+
+            if (todo.children) {
+                const [completed, total] = countChildren(todo.children);
+                acc[0] += completed;
+                acc[1] += total;
+            }
+
+            return acc;
+        }, [0, 0]);
+    };
+
+    return countChildren(todos);
+};
+
+function blurOnEnter(e: React.KeyboardEvent) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        // save editing
+        e.currentTarget.blur();
+    }
+}
+
 const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     item: Todo;
     onToggle: (id: string) => void;
@@ -73,142 +214,6 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
         </div>
     );
 };
-
-function blurOnEnter(e: React.KeyboardEvent) {
-    if (e.key === "Enter") {
-        e.preventDefault();
-        // save editing
-        e.currentTarget.blur();
-    }
-}
-
-const todos = signal<Todo[]>([
-    {
-        id: crypto.randomUUID(),
-        text: "Main Task 1",
-        completed: false,
-        children: [
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 1.1",
-                completed: false,
-            },
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 1.2",
-                completed: false,
-            },
-        ],
-    },
-    {
-        id: crypto.randomUUID(),
-        text: "Main Task 2",
-        completed: false,
-        children: [
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 2.1",
-                completed: false,
-            },
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 2.2",
-                completed: false,
-                children: [
-                    {
-                        id: crypto.randomUUID(),
-                        text: "Sub-subtask 2.2.1",
-                        completed: false,
-                    },
-                ],
-            },
-        ],
-    },
-]);
-
-const setTodos = (newTodos: Todo[]) => {
-    todos.value = newTodos;
-};
-
-const todoToggle = (id: string) => {
-    const updateTodo = (todos: Todo[]): Todo[] => {
-        return todos.map((todo) => {
-            if (todo.id === id) {
-                const newCompleted = !todo.completed;
-                return { ...todo, completed: newCompleted };
-            } else if (todo.children) {
-                return { ...todo, children: updateTodo(todo.children) };
-            }
-            return todo;
-        });
-    };
-
-    setTodos(updateTodo(todos.value));
-};
-
-const todoAdd = () => {
-    setTodos([
-        ...todos.value,
-        {
-            id: crypto.randomUUID(),
-            text: "New Task",
-            completed: false,
-            children: [],
-        },
-    ]);
-};
-
-const todoAddChild = (id: string) => {
-    const updateTodo = (todos: Todo[]): Todo[] => {
-        return todos.map((todo) => {
-            if (todo.id === id) {
-                return {
-                    ...todo,
-                    children: [
-                        ...todo.children ?? [],
-                        {
-                            id: crypto.randomUUID(),
-                            text: "New Subtask",
-                            completed: false,
-                            children: [],
-                        },
-                    ],
-                };
-            } else if (todo.children) {
-                return { ...todo, children: updateTodo(todo.children) };
-            }
-            return todo;
-        });
-    };
-
-    setTodos(updateTodo(todos.value));
-};
-
-const getCompletedPercentage = computed(() => {
-    const countChildren = (todos: Todo[]): [number, number] => {
-        if (todos.length === 0) {
-            return [0, 0];
-        }
-
-        // recursive count
-        return todos.reduce((acc, todo) => {
-            if (todo.completed) {
-                acc[0] += 1;
-            }
-            acc[1] += 1;
-
-            if (todo.children) {
-                const [completed, total] = countChildren(todo.children);
-                acc[0] += completed;
-                acc[1] += total;
-            }
-
-            return acc;
-        }, [0, 0]);
-    };
-
-    return countChildren(todos.value);
-});
 
 const NestedTodoList = () => {
     const [completed, total] = getCompletedPercentage.value;
