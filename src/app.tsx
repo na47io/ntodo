@@ -159,44 +159,51 @@ function Todos() {
 
     return (
         <section>
-            <hgroup>
-                <h2>{state.projectId}</h2>
-                <label for="file">completed : {completed} / {total}</label>
-                <progress id="file" value={completed} max={total}></progress>
-            </hgroup>
+            <header>
+                <a href="/new">+ new ntodo</a>
+            </header>
 
-            {todos.value.map((todo) => (
-                <TodoItem
-                    key={todo.id}
-                    item={todo}
-                    onToggle={handleTodoToggle(todos.value, setTodos)}
-                    onAddChild={handleTodoAddChild(todos.value, setTodos)}
-                />
-            ))}
-            <section style={{ display: "flex", "gap": "14px" }}>
-                <button
-                    onClick={handleAddTodo(todos.value, setTodos)}
-                >
-                    Add Task
-                </button>
-                <button
-                    disabled={total == 0}
-                    className="outline"
-                    onClick={() => {
-                        clearDialogOpen.value = true;
+            <section>
+                <hgroup>
+                    <h2>{state.projectId}</h2>
+                    <label for="file">completed : {completed} / {total}</label>
+                    <progress id="file" value={completed} max={total}>
+                    </progress>
+                </hgroup>
+
+                {todos.value.map((todo) => (
+                    <TodoItem
+                        key={todo.id}
+                        item={todo}
+                        onToggle={handleTodoToggle(todos.value, setTodos)}
+                        onAddChild={handleTodoAddChild(todos.value, setTodos)}
+                    />
+                ))}
+                <section style={{ display: "flex", "gap": "14px" }}>
+                    <button
+                        onClick={handleAddTodo(todos.value, setTodos)}
+                    >
+                        Add Task
+                    </button>
+                    <button
+                        disabled={total == 0}
+                        className="outline"
+                        onClick={() => {
+                            clearDialogOpen.value = true;
+                        }}
+                    >
+                        Clear
+                    </button>
+                </section>
+                <ClearDialog
+                    onCancel={() => {
+                        clearDialogOpen.value = false;
                     }}
-                >
-                    Clear
-                </button>
+                    onConfirm={() => handleClearTodos(setTodos)}
+                    open={clearDialogOpen.value}
+                    totalTodos={total}
+                />
             </section>
-            <ClearDialog
-                onCancel={() => {
-                    clearDialogOpen.value = false;
-                }}
-                onConfirm={() => handleClearTodos(setTodos)}
-                open={clearDialogOpen.value}
-                totalTodos={total}
-            />
         </section>
     );
 }

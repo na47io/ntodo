@@ -5,7 +5,7 @@ import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
 import { createAppState } from "@/model.ts";
 import { Todo } from "@/todo.ts";
-import { Landing } from "@/components/Landing.tsx";
+import { CreateNewForm, Landing } from "@/components/Landing.tsx";
 
 const INITIAL_TODOS: Todo[] = [
   {
@@ -88,6 +88,29 @@ app
       return new Response(html, { headers: { "content-type": "text/html" } });
     },
   )
+  .get("/new", (_c) => {
+    const html = `
+    <!DOCTYPE html>
+    
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Todo App</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+        >
+    </head>
+
+    <body>
+      <main class="container">
+        <div id="root">${renderToString(<CreateNewForm />)}</div>
+      </main>
+    </body>
+    `;
+    return new Response(html, { headers: { "content-type": "text/html" } });
+  })
   .get("/createProject", (c) => {
     const projectIdRaw = new URL(c.req.url).searchParams.get("projectId");
     if (!projectIdRaw) {

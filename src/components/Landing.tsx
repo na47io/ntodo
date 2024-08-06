@@ -50,6 +50,22 @@ function Docs() {
         </section>
     );
 }
+
+export function CreateNewForm() {
+    return (
+        <form method="GET" action="/createProject">
+            <input
+                required
+                type="text"
+                id="projectId"
+                name="projectId"
+                placeholder="Enter list name"
+            />
+            <button type="submit">create a ntodo list</button>
+        </form>
+    );
+}
+
 export function Landing() {
     return (
         <section>
@@ -58,16 +74,7 @@ export function Landing() {
             </header>
             <div class="grid">
                 <Docs />
-                <form method="GET" action="/createProject">
-                    <input
-                        required
-                        type="text"
-                        id="projectId"
-                        name="projectId"
-                        placeholder="Enter list name"
-                    />
-                    <button type="submit">create a ntodo list</button>
-                </form>
+                <CreateNewForm />
             </div>
             <footer>
                 <a href="https://github.com/nikololay/ntodo">source code</a>
