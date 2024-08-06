@@ -80,18 +80,22 @@ function compose(...fns: Function[]) {
 // take the current state and return a function that will
 // 1. get the new state by a applying the state transform (partially applied to the current state)
 // 2. set the new state
-const handleTodoToggle = (todos: Todo[]) =>
-    compose(todoToggle.bind(null, todos), setTodos);
-const handleTodoAddChild = (todos: Todo[]) =>
-    compose(
-        todoAddChild.bind(null, todos),
-        setTodos,
-    );
-const handleAddTodo = (todos: Todo[]) =>
+const handleTodoToggle = (
+    todos: Todo[],
+    setState: (newTodos: Todo[]) => void,
+) => compose(todoToggle.bind(null, todos), setState);
+const handleTodoAddChild = (
+    todos: Todo[],
+    setState: (newTodos: Todo[]) => void,
+) => compose(
+    todoAddChild.bind(null, todos),
+    setState,
+);
+const handleAddTodo = (todos: Todo[], setState: (newTodos: Todo[]) => void) =>
     compose(
         todoAdd.bind(null, todos),
-        setTodos,
-    ); // dont need partial apply here
+        setState,
+    );
 
 const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     item: Todo;
@@ -174,11 +178,11 @@ const NestedTodoList = () => {
                 <TodoItem
                     key={todo.id}
                     item={todo}
-                    onToggle={handleTodoToggle(todos.value)}
-                    onAddChild={handleTodoAddChild(todos.value)}
+                    onToggle={handleTodoToggle(todos.value, setTodos)}
+                    onAddChild={handleTodoAddChild(todos.value, setTodos)}
                 />
             ))}
-            <button onClick={handleAddTodo(todos.value)}>
+            <button onClick={handleAddTodo(todos.value, setTodos)}>
                 Add Task
             </button>
         </div>
