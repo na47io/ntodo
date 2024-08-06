@@ -1,18 +1,7 @@
 /** @jsxImportSource preact */
-export function Landing() {
+function Docs() {
     return (
-        <div>
-            <h1>welcome to ntodo</h1>
-            <form method="GET" action="/createProject">
-                <input
-                    required
-                    type="text"
-                    id="projectId"
-                    name="projectId"
-                    placeholder="Enter project name"
-                />
-                <button type="submit">Create Project</button>
-            </form>
+        <section>
             <p>
                 After reading{" "}
                 <a href="https://learnhowtolearn.org/how-to-build-extremely-quickly/">
@@ -58,11 +47,33 @@ export function Landing() {
                     </li>
                 </ul>
             </p>
+        </section>
+    );
+}
+export function Landing() {
+    return (
+        <section>
+            <header>
+                <h1>welcome to ntodo 🗿</h1>
+            </header>
+            <div class="grid">
+                <Docs />
+                <form method="GET" action="/createProject">
+                    <input
+                        required
+                        type="text"
+                        id="projectId"
+                        name="projectId"
+                        placeholder="Enter list name"
+                    />
+                    <button type="submit">create a ntodo list</button>
+                </form>
+            </div>
             <footer>
-                made by{" "}
-                <a href="https://github.com/nikololay">nikolay</a>. see the{" "}
                 <a href="https://github.com/nikololay/ntodo">source code</a>
+                {" | "}
+                made by <a href="https://github.com/nikololay">nikolay</a>
             </footer>
-        </div>
+        </section>
     );
 }

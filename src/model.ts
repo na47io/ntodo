@@ -42,8 +42,7 @@ export function createAppState(
                     todos: todos.value,
                     projectId,
                 }),
-            }).then((res) => {
-                console.log("saved");
+            }).then((_res) => {
             });
         }
     });

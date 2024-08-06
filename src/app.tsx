@@ -50,19 +50,22 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     const allChildrenCompleted = hasChildren &&
         item.children?.every((child) => child.completed);
     const canBeCompleted = !hasChildren || allChildrenCompleted;
+    const itemCompleted = item.completed && canBeCompleted;
 
     return (
-        <div style={{ marginLeft: "20px" }}>
+        <div>
             <label
                 style={{
                     display: "flex",
                     alignItems: "center",
                     marginBottom: "5px",
+                    gap: "15px",
                 }}
             >
+                {"|" + "-".repeat(level * 8)}
                 <input
                     type="checkbox"
-                    checked={item.completed}
+                    checked={itemCompleted}
                     onChange={() => onToggle(item.id)}
                     disabled={!canBeCompleted}
                     //TODO can uncheck child elements after parent has been checked
@@ -70,17 +73,19 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                 <span
                     onClick={(e) => e.preventDefault()}
                     onKeyDown={blurOnEnter}
-                    contentEditable={!item.completed}
+                    contentEditable={!itemCompleted}
                     style={{
-                        "textDecoration": item.completed
+                        "textDecoration": itemCompleted
                             ? "line-through"
                             : "none",
+                        "opacity": itemCompleted ? 0.3 : 1,
                     }}
                 >
                     {item.text}
                 </span>
                 <button
-                    disabled={item.completed}
+                    className="outline"
+                    disabled={itemCompleted}
                     onClick={() => onAddChild(item.id)}
                 >
                     ⬇️
@@ -113,9 +118,13 @@ function Todos() {
     const setTodos = state.setTodos;
 
     return (
-        <div>
-            <h1>Project: {state.projectId}</h1>
-            <h2>Completed: {completed} / {total}</h2>
+        <section>
+            <hgroup>
+                <h2>{state.projectId}</h2>
+                <label for="file">completed : {completed} / {total}</label>
+                <progress id="file" value={completed} max={total}></progress>
+            </hgroup>
+
             {todos.value.map((todo) => (
                 <TodoItem
                     key={todo.id}
@@ -124,10 +133,12 @@ function Todos() {
                     onAddChild={handleTodoAddChild(todos.value, setTodos)}
                 />
             ))}
-            <button onClick={handleAddTodo(todos.value, setTodos)}>
+            <button
+                onClick={handleAddTodo(todos.value, setTodos)}
+            >
                 Add Task
             </button>
-        </div>
+        </section>
     );
 }
 

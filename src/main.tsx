@@ -73,10 +73,16 @@ app
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Todo App</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+        >
     </head>
 
     <body>
+      <main class="container">
         <div id="root">${renderToString(<Landing />)}</div>
+      </main>
     </body>
     `;
       return new Response(html, { headers: { "content-type": "text/html" } });
@@ -114,6 +120,10 @@ app
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Todo App</title>
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+        >
         <script type="importmap">
         ${importMap}
         </script>
@@ -124,7 +134,9 @@ app
     </head>
 
     <body>
+      <main class="container">
         <div id="root">${renderToString(<App initialState={appState} />)}</div>
+      </main>
     </body>
     `;
       return new Response(html, {
