@@ -276,10 +276,13 @@
     "https://dev.jspm.io/npm:react@16.14.0/cjs/react.development.js!cjs": "c9a5f57b27559a9cd124a3fcdb8243464078f0cfe070eb92dbaaa49f970b7df2",
     "https://dev.jspm.io/react-dom@16.13.1/server": "0e7739aaa8475102c178693d51abb7527c7fb554b8623b0c37637648f19d1b31",
     "https://dev.jspm.io/react@16.13.1": "022bf8de2378b59240a3c7d37455eba76cc291448d5bee329fc7e9f40e94cf1d",
+    "https://esm.sh/@preact/signals@1.1.3?external=preact": "f3894aaaee3daff2b699d104fbc928a0feb4aa537b11ae278bc5168a1a1c9b39",
     "https://esm.sh/@preact/signals@1.3.0": "7513e29a4959048977498e587ace351c12aff6baa46e3ebbe7025b50f3c2d507",
     "https://esm.sh/hono@4.5.3": "3585d382f22e93fa53c1bc5cbdc122dbeafaf7ea7fdf85cd757dd6e63882d531",
     "https://esm.sh/preact-render-to-string@6.5.7": "70bd2d672feb32f9aa780b8ca5672a28b73b73b8a91b19b22525ca2887311aca",
     "https://esm.sh/preact-render-to-string@6.5.7/stream": "65bbe2411009dc247966fc930b4ee6703cfc9297c68881946fde76eeff276423",
+    "https://esm.sh/preact@10.12.1": "1760ea6b3b133c4593ef32e6abfe5b00aaf5a5fc7207c5fcd2b423ee5d745b23",
+    "https://esm.sh/preact@10.12.1/hooks?external=preact": "a3fce88f12b877e371cdb1657599295aa8fb59a392c843598b6cd7f0b028f31b",
     "https://esm.sh/preact@10.23.1": "5c90e3946c882878ada8f82671a1e2cfc3d307eb1253e83cee74f04194cecf41",
     "https://esm.sh/preact@10.23.1/compat": "e6e124f2c59692ee4dda7d1b9271a6169c57eaa43077495497a44313195fc859",
     "https://esm.sh/preact@10.23.1/jsx-runtime": "83b7eab4eaa811a07e49da8d0b93bf9fe0daf4540c1c79ceadd057f916b46224",
@@ -287,6 +290,8 @@
     "https://esm.sh/react-dom@18.3.1/server": "90e374c5323303d5315c780b19e5d6297ec5a569f9cee1df28ee1030dd23af9c",
     "https://esm.sh/react@18.3.1": "52480d4c00855e4f76843caa4f2818eb001671523740cbf064cbd108721c29c8",
     "https://esm.sh/react@18.3.1/jsx-runtime": "f47f11639cc0531ad2f1e0f6334d9ae7a8d906c905d9b79cb2e8cd4331bc5b10",
+    "https://esm.sh/stable/preact@10.12.1/denonext/hooks.js": "967adddeacaee670dfa1244f4c95004aec0d803b8bd545f164e926d3ab95d640",
+    "https://esm.sh/stable/preact@10.12.1/denonext/preact.mjs": "f71b56ab948f75519ddf7bf23517066501b5f8e59acb0128dff8f1f303237ffc",
     "https://esm.sh/stable/preact@10.22.1/denonext/hooks.js": "5c79b37c4b13be590576ba53bd4093beb6e95c10ee475cddf5af5051a6e040fa",
     "https://esm.sh/stable/preact@10.22.1/denonext/preact.mjs": "516caa8df1109e0b82becdb053e7d956802ee2f3e3fa7f6925291e4d4a527706",
     "https://esm.sh/stable/preact@10.23.0/denonext/preact.mjs": "0f0fbe7d20f470c4a9fc84df8ff0acef5db9563c410b49bf251a4d6917a882a6",
@@ -297,6 +302,7 @@
     "https://esm.sh/stable/react@18.3.1/denonext/jsx-runtime.js": "5ff1e02a3bb5c69dd3535d77054b182f1ea51c5eeaf24a396984f6b7012c2716",
     "https://esm.sh/stable/react@18.3.1/denonext/react.mjs": "fc048ffc55366baf7669519127d186761db72046e2bebf35fe8d0de3964defa3",
     "https://esm.sh/v135/@preact/signals-core@1.7.0/denonext/signals-core.mjs": "fe550d1424b92ff4046542ee6c388e3cab999d672822aac4f0d129c7a6a67cbb",
+    "https://esm.sh/v135/@preact/signals@1.1.3/X-ZS9wcmVhY3Q/denonext/signals.mjs": "102c6bbf9362daec7c8db72d8018e44d7590b9570f0c618804d9faca291c54b2",
     "https://esm.sh/v135/@preact/signals@1.3.0/denonext/signals.mjs": "02cfd03fe1cd484df1e1a7682525db4e9c9ee0978a9b9589a42f038556e94419",
     "https://esm.sh/v135/hono@4.5.3/denonext/hono-base.js": "2330e6d58db4f7fa7ad47f43ce08dcc1a9b3d1cf38c32f41c4d965a08592ce09",
     "https://esm.sh/v135/hono@4.5.3/denonext/hono.mjs": "273c216a299621bb821f1693358a7331988e062f82429b622725e279f1db2d13",
@@ -320,10 +326,5 @@
     "https://raw.githubusercontent.com/garronej/minimal_polyfills/2.1.0/WeakMap.ts": "3b0cb6ab1348897b5e107e932f53213e1459e9759db0c5eea5d01eb9bd3e0ddb",
     "https://raw.githubusercontent.com/garronej/run_exclusive/2.2.4/lib/runExclusive.ts": "6376cf9404bfa900daf26ba2a56ddeb18671b8b111ca62b94fec13ad48c8e0a1",
     "https://raw.githubusercontent.com/garronej/run_exclusive/2.2.4/mod.ts": "1219baae8b08f63804cdb2df9d26936cc7a61194a5d06404cbf38bb4b82e6bec"
-  },
-  "workspace": {
-    "dependencies": [
-      "jsr:@std/assert@1"
-    ]
   }
 }

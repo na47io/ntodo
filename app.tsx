@@ -1,6 +1,6 @@
 /** @jsxImportSource https://esm.sh/preact */
 import React from "https://esm.sh/preact/compat";
-import { signal } from "../../Library/Caches/deno/npm/registry.npmjs.org/@preact/signals-core/1.8.0/dist/signals-core.d.ts";
+import { signal } from "@preact/signals";
 
 interface Todo {
     id: string; // UUID
