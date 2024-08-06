@@ -1,64 +1,7 @@
 /** @jsxImportSource preact */
-import { computed, signal } from "@preact/signals";
-import {
-    Todo,
-    todoAdd,
-    todoAddChild,
-    todoGetCounts,
-    todoToggle,
-} from "./todo.ts";
-
-const INITIAL_TODOS: Todo[] = [
-    {
-        id: crypto.randomUUID(),
-        text: "Main Task 1",
-        completed: false,
-        children: [
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 1.1",
-                completed: false,
-            },
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 1.2",
-                completed: false,
-            },
-        ],
-    },
-    {
-        id: crypto.randomUUID(),
-        text: "Main Task 2",
-        completed: false,
-        children: [
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 2.1",
-                completed: false,
-            },
-            {
-                id: crypto.randomUUID(),
-                text: "Subtask 2.2",
-                completed: false,
-                children: [
-                    {
-                        id: crypto.randomUUID(),
-                        text: "Sub-subtask 2.2.1",
-                        completed: false,
-                    },
-                ],
-            },
-        ],
-    },
-];
-
-const todos = signal<Todo[]>(INITIAL_TODOS);
-const getCompletedPercentage = computed(() => {
-    return todoGetCounts(todos.value);
-});
-const setTodos = (newTodos: Todo[]) => {
-    todos.value = newTodos;
-};
+import { Todo, todoAdd, todoAddChild, todoToggle } from "./todo.ts";
+import { useContext } from "preact/hooks";
+import { AppContext, State } from "./model.ts";
 
 function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
@@ -162,8 +105,12 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     );
 };
 
-const NestedTodoList = () => {
-    const [completed, total] = getCompletedPercentage.value;
+function Todos() {
+    const state = useContext(AppContext);
+
+    const [completed, total] = state.counts.value;
+    const todos = state.todos;
+    const setTodos = state.setTodos;
 
     return (
         <div>
@@ -187,8 +134,12 @@ const NestedTodoList = () => {
             </button>
         </div>
     );
-};
+}
 
-const App = () => <NestedTodoList />;
-
-export default App;
+export function App(props: { initialState: State }) {
+    return (
+        <AppContext.Provider value={props.initialState}>
+            <Todos />
+        </AppContext.Provider>
+    );
+}
