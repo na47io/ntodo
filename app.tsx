@@ -1,6 +1,6 @@
 /** @jsxImportSource https://esm.sh/preact */
 import React from "https://esm.sh/preact/compat";
-import { signal } from "@preact/signals";
+import { computed, signal } from "@preact/signals";
 
 interface Todo {
     id: string; // UUID
@@ -82,52 +82,54 @@ function blurOnEnter(e: React.KeyboardEvent) {
     }
 }
 
-const NestedTodoList = () => {
-    const todos: Todo[] = [
-        {
-            id: crypto.randomUUID(),
-            text: "Main Task 1",
-            completed: false,
-            children: [
-                {
-                    id: crypto.randomUUID(),
-                    text: "Subtask 1.1",
-                    completed: false,
-                },
-                {
-                    id: crypto.randomUUID(),
-                    text: "Subtask 1.2",
-                    completed: false,
-                },
-            ],
-        },
-        {
-            id: crypto.randomUUID(),
-            text: "Main Task 2",
-            completed: false,
-            children: [
-                {
-                    id: crypto.randomUUID(),
-                    text: "Subtask 2.1",
-                    completed: false,
-                },
-                {
-                    id: crypto.randomUUID(),
-                    text: "Subtask 2.2",
-                    completed: false,
-                    children: [
-                        {
-                            id: crypto.randomUUID(),
-                            text: "Sub-subtask 2.2.1",
-                            completed: false,
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
+const todos = signal<Todo[]>([
+    {
+        id: crypto.randomUUID(),
+        text: "Main Task 1",
+        completed: false,
+        children: [
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 1.1",
+                completed: false,
+            },
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 1.2",
+                completed: false,
+            },
+        ],
+    },
+    {
+        id: crypto.randomUUID(),
+        text: "Main Task 2",
+        completed: false,
+        children: [
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 2.1",
+                completed: false,
+            },
+            {
+                id: crypto.randomUUID(),
+                text: "Subtask 2.2",
+                completed: false,
+                children: [
+                    {
+                        id: crypto.randomUUID(),
+                        text: "Sub-subtask 2.2.1",
+                        completed: false,
+                    },
+                ],
+            },
+        ],
+    },
+]);
 
-    const setTodos = (newTodos: Todo[]) => {};
+const NestedTodoList = () => {
+    const setTodos = (newTodos: Todo[]) => {
+        todos.value = newTodos;
+    };
 
     const todoToggle = (id: string) => {
         const updateTodo = (todos: Todo[]): Todo[] => {
@@ -142,12 +144,12 @@ const NestedTodoList = () => {
             });
         };
 
-        setTodos(updateTodo(todos));
+        setTodos(updateTodo(todos.value));
     };
 
     const todoAdd = () => {
         setTodos([
-            ...todos,
+            ...todos.value,
             {
                 id: crypto.randomUUID(),
                 text: "New Task",
@@ -181,18 +183,36 @@ const NestedTodoList = () => {
         };
 
         console.log("adding child!");
-        setTodos(updateTodo(todos));
+        setTodos(updateTodo(todos.value));
     };
 
-    const getCompletedPercentage = (todos: Todo[]) => {
-        const allTodos = todos.flatMap((todo) => {
-            const children = todo.children ?? [];
-            return [todo, ...children];
-        });
-        const completed = allTodos.filter((todo) => todo.completed).length;
+    const getCompletedPercentage = computed(() => {
+        const countChildren = (todos: Todo[]): [number, number] => {
+            if (todos.length === 0) {
+                return [0, 0];
+            }
 
-        return `${completed}/${allTodos.length}`;
-    };
+            // recursive count
+            return todos.reduce((acc, todo) => {
+                if (todo.completed) {
+                    acc[0] += 1;
+                }
+                acc[1] += 1;
+
+                if (todo.children) {
+                    const [completed, total] = countChildren(todo.children);
+                    acc[0] += completed;
+                    acc[1] += total;
+                }
+
+                return acc;
+            }, [0, 0]);
+        };
+
+        return countChildren(todos.value);
+    });
+
+    const [completed, total] = getCompletedPercentage.value;
 
     return (
         <div>
@@ -202,8 +222,8 @@ const NestedTodoList = () => {
             >
                 n-todo
             </h1>
-            <h2>Completed: {getCompletedPercentage(todos)}</h2>
-            {todos.map((todo) => (
+            <h2>Completed: {completed} / {total}</h2>
+            {todos.value.map((todo) => (
                 <TodoItem
                     key={todo.id}
                     item={todo}
