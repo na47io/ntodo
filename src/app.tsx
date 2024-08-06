@@ -2,6 +2,7 @@
 import { Todo, todoAdd, todoAddChild, todoToggle } from "./todo.ts";
 import { useContext } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
+import { signal } from "@preact/signals";
 
 function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
@@ -39,6 +40,44 @@ const handleAddTodo = (todos: Todo[], setState: (newTodos: Todo[]) => void) =>
         todoAdd.bind(null, todos),
         setState,
     );
+const handleClearTodos = (
+    setState: (newTodos: Todo[]) => void,
+) => setState([]);
+
+const ClearDialog = (
+    { open, onCancel, onConfirm, totalTodos }: {
+        open: boolean;
+        onCancel: () => void;
+        onConfirm: () => void;
+        totalTodos: number;
+    },
+) => {
+    const itemItems = totalTodos === 1 ? "item" : "items";
+    return (
+        <dialog open={open}>
+            <article>
+                <h6>Clear {totalTodos} {itemItems}</h6>
+                <p>
+                    ⚠️ Be <strong>careful</strong>! There is no tunring back.
+                </p>
+                <footer>
+                    <button
+                        onClick={onCancel}
+                        class="secondary"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="outline"
+                        onClick={compose(onConfirm, onCancel)}
+                    >
+                        Clear {totalTodos} {itemItems}
+                    </button>
+                </footer>
+            </article>
+        </dialog>
+    );
+};
 
 const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     item: Todo;
@@ -59,7 +98,7 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                     display: "flex",
                     alignItems: "center",
                     marginBottom: "5px",
-                    gap: "15px",
+                    gap: "14px",
                 }}
             >
                 {"|" + "-".repeat(level * 8)}
@@ -109,6 +148,7 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
         </div>
     );
 };
+const clearDialogOpen = signal(false);
 
 function Todos() {
     const state = useContext(AppContext);
@@ -133,11 +173,30 @@ function Todos() {
                     onAddChild={handleTodoAddChild(todos.value, setTodos)}
                 />
             ))}
-            <button
-                onClick={handleAddTodo(todos.value, setTodos)}
-            >
-                Add Task
-            </button>
+            <section style={{ display: "flex", "gap": "14px" }}>
+                <button
+                    onClick={handleAddTodo(todos.value, setTodos)}
+                >
+                    Add Task
+                </button>
+                <button
+                    disabled={total == 0}
+                    className="outline"
+                    onClick={() => {
+                        clearDialogOpen.value = true;
+                    }}
+                >
+                    Clear
+                </button>
+            </section>
+            <ClearDialog
+                onCancel={() => {
+                    clearDialogOpen.value = false;
+                }}
+                onConfirm={() => handleClearTodos(setTodos)}
+                open={clearDialogOpen.value}
+                totalTodos={total}
+            />
         </section>
     );
 }
