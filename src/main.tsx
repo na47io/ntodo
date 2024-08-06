@@ -5,6 +5,7 @@ import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
 import { createAppState } from "@/model.ts";
 import { Todo } from "@/todo.ts";
+
 const INITIAL_TODOS: Todo[] = [
   {
     id: crypto.randomUUID(),
@@ -63,8 +64,14 @@ app
   .get(
     "/",
     async (_c) => {
-      const result = await kv.get(["project", "123"]);
+      const projectId = "123";
+      const result = await kv.get(["project", projectId]);
       const todos = result.value as Todo[];
+
+      // appState has signals and stuff, initialState is a DTO
+      const initialState = { projectId, initialTodos: todos ?? INITIAL_TODOS };
+      const appState = createAppState(initialState);
+
       const html = `
     <!DOCTYPE html>
     
@@ -77,15 +84,13 @@ app
         ${importMap}
         </script>
         <script>
-        window.__INITIAL_STATE__ = ${JSON.stringify(todos)};
+        window.__INITIAL_STATE__ = ${JSON.stringify(initialState)};
         </script>
         <script type="module" src="${CLIENT_BUNDLE_FNAME}"></script>
     </head>
 
     <body>
-        <div id="root">${
-        renderToString(<App initialState={createAppState(todos)} />)
-      }</div>
+        <div id="root">${renderToString(<App initialState={appState} />)}</div>
     </body>
     `;
       return new Response(html, { headers: { "content-type": "text/html" } });

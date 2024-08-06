@@ -120,6 +120,7 @@ function Todos() {
             >
                 n-todo
             </h1>
+            <h2>Project: {state.projectId}</h2>
             <h2>Completed: {completed} / {total}</h2>
             {todos.value.map((todo) => (
                 <TodoItem

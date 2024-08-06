@@ -1,10 +1,12 @@
 /** @jsxImportSource preact */
 import { hydrate } from "preact";
 import { App } from "@/app.tsx";
-import { createAppState } from "@/model.ts";
+import { createAppState, InitialState } from "@/model.ts";
 
-//@ts-ignore - this code runs in the browser where `globalThis` is window
-const initialState = createAppState(globalThis.__INITIAL_STATE__ as Todo[]);
+const initialState = createAppState(
+    //@ts-ignore - this code runs in the browser where `globalThis` is window
+    globalThis.__INITIAL_STATE__ as InitialState,
+);
 
 //@ts-ignore - this code runs in the browser where `document` is available
 hydrate(<App initialState={initialState} />, document.getElementById("root"));

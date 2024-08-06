@@ -2,20 +2,27 @@ import { computed, effect, Signal, signal } from "@preact/signals";
 import { Todo, todoGetCounts } from "@/todo.ts";
 import { createContext } from "preact";
 
+export interface InitialState {
+    projectId: string;
+    initialTodos: Todo[];
+}
+
 export interface State {
+    projectId: string;
     todos: Signal<Todo[]>;
     counts: Signal<[number, number]>;
     setTodos: (newState: Todo[]) => void;
 }
 
 export const AppContext = createContext<State>({
+    projectId: "",
     todos: signal([]),
     counts: signal([0, 0]),
     setTodos: () => {},
 });
 
 export function createAppState(
-    initialTodos: Todo[],
+    { projectId, initialTodos }: InitialState,
 ): State {
     const todos = signal<Todo[]>(initialTodos);
 
@@ -33,7 +40,7 @@ export function createAppState(
                 },
                 body: JSON.stringify({
                     todos: todos.value,
-                    projectId: "123",
+                    projectId,
                 }),
             }).then((res) => {
                 console.log("saved");
@@ -42,6 +49,7 @@ export function createAppState(
     });
 
     return {
+        projectId,
         todos,
         counts,
         setTodos: (newTodos: Todo[]) => {
