@@ -1,8 +1,9 @@
 {
   "tasks": {
     "dev": "deno run --unstable -A --watch src/main.tsx",
-    "bundle": "deno run --allow-write --allow-read --allow-env --allow-run src/bundle.ts",
-    "deploy": "deno task bundle && deployctl deploy"
+    "bundle": "deno run --allow-write --allow-read --allow-env --allow-run --allow-net src/bundle.ts",
+    "staging": "deno task bundle && deployctl deploy",
+    "prod": "deno task bundle && deployctl deploy --prod"
   },
   "importMap": "./import_map.json",
   "deploy": {
