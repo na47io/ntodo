@@ -1,5 +1,5 @@
 import { Todo, todoAdd, todoAddChild, todoToggle } from "@/todo.ts";
-import { useContext } from "preact/hooks";
+import { useContext, useState } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
 import { signal } from "@preact/signals";
 
@@ -90,6 +90,8 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     const canBeCompleted = !hasChildren || allChildrenCompleted;
     const itemCompleted = item.completed && canBeCompleted;
 
+    const [text, setText] = useState(item.text);
+
     return (
         <div>
             <label
@@ -109,16 +111,20 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                     //TODO can uncheck child elements after parent has been checked
                 />
                 <span
-                    onClick={(e) => e.preventDefault()}
+                    onClick={(e) => {
+                        e.preventDefault();
+                        setText(() => "");
+                    }}
                     onKeyDown={blurOnEnter}
                     contentEditable={!itemCompleted}
                     style={{
                         padding: "8px",
+                        minWidth: "100px",
                         textDecoration: itemCompleted ? "line-through" : "none",
                         opacity: itemCompleted ? 0.3 : 1,
                     }}
                 >
-                    {item.text}
+                    {text}
                 </span>
                 <button
                     className="outline"
