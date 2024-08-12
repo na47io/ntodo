@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { renderToString } from "preact-render-to-string";
 import { App } from "@/app.tsx";
-import { createAppState } from "@/model.ts";
+import { createAppState, Todos } from "@/model.ts";
 import { Todo } from "@/todo.ts";
 import { CreateNewForm, Landing } from "@/components/Landing.tsx";
 import { bundleClientForBrowser } from "@/bundle.ts";
@@ -128,10 +128,16 @@ app
       const projectIdRaw = c.req.param("projectId");
       const projectId = projectIdRaw.trim().replace(/\s+/g, "-").toLowerCase();
       const result = await kv.get(["project", projectId]);
-      const todos = result.value as Todo[];
+      const todos = result.value as Todos;
 
       // appState has signals and stuff, initialState is a DTO
-      const initialState = { projectId, initialTodos: todos ?? INITIAL_TODOS };
+      const initialState = {
+        projectId,
+        initialTodos: {
+          todos: todos.todos || INITIAL_TODOS,
+          version: todos.version,
+        },
+      };
       const appState = createAppState(initialState);
 
       const html = `

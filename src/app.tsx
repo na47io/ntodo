@@ -156,23 +156,27 @@ function Todos() {
             <section>
                 <hgroup>
                     <h2>{state.projectId}</h2>
+                    <small>v{todos.value.version}</small>
                     <label for="file">completed : {completed} / {total}</label>
                     <progress id="file" value={completed} max={total}>
                     </progress>
                 </hgroup>
 
-                {todos.value.map((todo) => (
+                {todos.value.todos.map((todo) => (
                     <TodoItem
                         key={todo.id}
                         item={todo}
-                        onToggle={handleTodoToggle(todos.value, setTodos)}
-                        onAddChild={handleTodoAddChild(todos.value, setTodos)}
-                        onDelete={handleTodoDelete(todos.value, setTodos)}
+                        onToggle={handleTodoToggle(todos.value.todos, setTodos)}
+                        onAddChild={handleTodoAddChild(
+                            todos.value.todos,
+                            setTodos,
+                        )}
+                        onDelete={handleTodoDelete(todos.value.todos, setTodos)}
                     />
                 ))}
                 <section style={{ display: "flex", "gap": "14px" }}>
                     <button
-                        onClick={handleAddTodo(todos.value, setTodos)}
+                        onClick={handleAddTodo(todos.value.todos, setTodos)}
                     >
                         Add Task
                     </button>
@@ -203,7 +207,7 @@ function Todos() {
                         };
                     }}
                     onConfirm={() =>
-                        handleTodoDelete(todos.value, setTodos)(
+                        handleTodoDelete(todos.value.todos, setTodos)(
                             deleteDialogOpen.value.id,
                         )}
                     open={deleteDialogOpen.value.open}
