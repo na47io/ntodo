@@ -104,7 +104,7 @@ const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
                     disabled={itemCompleted}
                     onClick={() => onAddChild(item.id)}
                 >
-                    ⬇️
+                    subtask
                 </button>
                 <button
                     className="outline"
@@ -117,7 +117,7 @@ const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
                         };
                     }}
                 >
-                    delete
+                    del
                 </button>
             </label>
             {hasChildren && (
