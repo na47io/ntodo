@@ -134,8 +134,8 @@ app
       const initialState = {
         projectId,
         initialTodos: {
-          todos: todos.todos || INITIAL_TODOS,
-          version: todos.version,
+          todos: todos?.todos || INITIAL_TODOS,
+          version: todos?.version || 0,
         },
       };
       const appState = createAppState(initialState);
