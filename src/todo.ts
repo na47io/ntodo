@@ -82,3 +82,25 @@ export const todoGetCounts = (todos: Todo[]): [number, number] => {
 
     return countChildren(todos);
 };
+
+export const todoDelete = (todos: Todo[], id: string): Todo[] => {
+    // remove the todo with the matching id
+    const removeTodo = (todos: Todo[]): Todo[] => {
+        return todos.reduce((acc, todo) => {
+            if (todo.id === id) {
+                return acc;
+            }
+
+            if (todo.children) {
+                return [...acc, {
+                    ...todo,
+                    children: removeTodo(todo.children),
+                }];
+            }
+
+            return [...acc, todo];
+        }, [] as Todo[]);
+    };
+
+    return removeTodo(todos);
+};

@@ -1,4 +1,4 @@
-import { Todo, todoAdd, todoAddChild, todoToggle } from "@/todo.ts";
+import { Todo, todoAdd, todoAddChild, todoDelete, todoToggle } from "@/todo.ts";
 import { useContext, useState } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
 import { signal } from "@preact/signals";
@@ -27,6 +27,7 @@ const handleTodoToggle = (
     todos: Todo[],
     setState: (newTodos: Todo[]) => void,
 ) => compose(todoToggle.bind(null, todos), setState);
+
 const handleTodoAddChild = (
     todos: Todo[],
     setState: (newTodos: Todo[]) => void,
@@ -34,11 +35,23 @@ const handleTodoAddChild = (
     todoAddChild.bind(null, todos),
     setState,
 );
+
 const handleAddTodo = (todos: Todo[], setState: (newTodos: Todo[]) => void) =>
     compose(
         todoAdd.bind(null, todos),
         setState,
     );
+
+function handleTodoDelete(
+    todos: Todo[],
+    setState: (newTodos: Todo[]) => void,
+): (id: string) => void {
+    return compose(
+        todoDelete.bind(null, todos),
+        setState,
+    );
+}
+
 const handleClearTodos = (
     setState: (newTodos: Todo[]) => void,
 ) => setState([]);
@@ -57,7 +70,7 @@ const ClearDialog = (
             <article>
                 <h6>Clear {totalTodos} {itemItems}</h6>
                 <p>
-                    ⚠️ Be <strong>careful</strong>! There is no tunring back.
+                    ⚠️ Be <strong>careful</strong>! There is no turning back.
                 </p>
                 <footer>
                     <button
@@ -78,10 +91,44 @@ const ClearDialog = (
     );
 };
 
-const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
+const DeleteDialog = (
+    { open, onCancel, onConfirm }: {
+        open: boolean;
+        onCancel: () => void;
+        onConfirm: () => void;
+    },
+) => {
+    return (
+        <dialog open={open}>
+            <article>
+                <h6>Delete task (and its children!)</h6>
+                <p>
+                    ⚠️ Be <strong>careful</strong>! There is no turning back.
+                </p>
+                <footer>
+                    <button
+                        onClick={onCancel}
+                        class="secondary"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        className="outline"
+                        onClick={compose(onConfirm, onCancel)}
+                    >
+                        Delete Task
+                    </button>
+                </footer>
+            </article>
+        </dialog>
+    );
+};
+
+const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
     item: Todo;
     onToggle: (id: string) => void;
     onAddChild: (id: string) => void;
+    onDelete: (id: string) => void;
     level?: number;
 }) => {
     const hasChildren = item.children && item.children.length > 0;
@@ -133,6 +180,19 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                 >
                     ⬇️
                 </button>
+                <button
+                    className="outline"
+                    disabled={itemCompleted}
+                    onClick={() => {
+                        deleteDialogOpen.value = {
+                            open: true,
+                            id: item.id,
+                            childTaskCount: item.children?.length || 0,
+                        };
+                    }}
+                >
+                    delete
+                </button>
             </label>
             {hasChildren && (
                 <div>
@@ -143,6 +203,7 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                                 item={child}
                                 onToggle={onToggle}
                                 onAddChild={onAddChild}
+                                onDelete={onDelete}
                                 level={level + 1}
                             />
                         </div>
@@ -153,6 +214,17 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
     );
 };
 const clearDialogOpen = signal(false);
+
+interface DeleteDialogProps {
+    open: boolean;
+    id: string;
+    childTaskCount: number;
+}
+const deleteDialogOpen = signal<DeleteDialogProps>({
+    open: false,
+    id: "",
+    childTaskCount: 0,
+});
 
 function Todos() {
     const state = useContext(AppContext);
@@ -181,6 +253,7 @@ function Todos() {
                         item={todo}
                         onToggle={handleTodoToggle(todos.value, setTodos)}
                         onAddChild={handleTodoAddChild(todos.value, setTodos)}
+                        onDelete={handleTodoDelete(todos.value, setTodos)}
                     />
                 ))}
                 <section style={{ display: "flex", "gap": "14px" }}>
@@ -206,6 +279,20 @@ function Todos() {
                     onConfirm={() => handleClearTodos(setTodos)}
                     open={clearDialogOpen.value}
                     totalTodos={total}
+                />
+                <DeleteDialog
+                    onCancel={() => {
+                        deleteDialogOpen.value = {
+                            open: false,
+                            id: "",
+                            childTaskCount: 0,
+                        };
+                    }}
+                    onConfirm={() =>
+                        handleTodoDelete(todos.value, setTodos)(
+                            deleteDialogOpen.value.id,
+                        )}
+                    open={deleteDialogOpen.value.open}
                 />
             </section>
         </section>
