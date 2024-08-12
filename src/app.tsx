@@ -1,4 +1,4 @@
-import { Todo, todoAdd, todoAddChild, todoToggle } from "./todo.ts";
+import { Todo, todoAdd, todoAddChild, todoToggle } from "@/todo.ts";
 import { useContext } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
 import { signal } from "@preact/signals";
@@ -113,10 +113,9 @@ const TodoItem = ({ item, onToggle, onAddChild, level = 0 }: {
                     onKeyDown={blurOnEnter}
                     contentEditable={!itemCompleted}
                     style={{
-                        "textDecoration": itemCompleted
-                            ? "line-through"
-                            : "none",
-                        "opacity": itemCompleted ? 0.3 : 1,
+                        padding: "8px",
+                        textDecoration: itemCompleted ? "line-through" : "none",
+                        opacity: itemCompleted ? 0.3 : 1,
                     }}
                 >
                     {item.text}
