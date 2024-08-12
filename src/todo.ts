@@ -104,3 +104,18 @@ export const todoDelete = (todos: Todo[], id: string): Todo[] => {
 
     return removeTodo(todos);
 };
+
+export function todoEdit(todos: Todo[], id: string, text: string): Todo[] {
+    const updateTodo = (todos: Todo[]): Todo[] => {
+        return todos.map((todo) => {
+            if (todo.id === id) {
+                return { ...todo, text };
+            } else if (todo.children) {
+                return { ...todo, children: updateTodo(todo.children) };
+            }
+            return todo;
+        });
+    };
+
+    return updateTodo(todos);
+}

@@ -1,4 +1,11 @@
-import { Todo, todoAdd, todoAddChild, todoDelete, todoToggle } from "@/todo.ts";
+import {
+    Todo,
+    todoAdd,
+    todoAddChild,
+    todoDelete,
+    todoEdit,
+    todoToggle,
+} from "@/todo.ts";
 import { useContext, useState } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
 import { ClearDialog, clearDialogOpen } from "@/components/ClearDialog.tsx";
@@ -46,17 +53,30 @@ function handleTodoDelete(
     );
 }
 
+function handleTodoEdit(
+    todos: Todo[],
+    setState: (newTodos: Todo[]) => void,
+): (id: string, text: string) => void {
+    return compose(
+        todoEdit.bind(null, todos),
+        setState,
+    );
+}
+
 const handleClearTodos = (
     setState: (newTodos: Todo[]) => void,
 ) => setState([]);
 
-const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
-    item: Todo;
-    onToggle: (id: string) => void;
-    onAddChild: (id: string) => void;
-    onDelete: (id: string) => void;
-    level?: number;
-}) => {
+const TodoItem = (
+    { item, onToggle, onAddChild, onDelete, onTaskEdit, level = 0 }: {
+        item: Todo;
+        onToggle: (id: string) => void;
+        onAddChild: (id: string) => void;
+        onDelete: (id: string) => void;
+        onTaskEdit: (id: string, text: string) => void;
+        level?: number;
+    },
+) => {
     const hasChildren = item.children && item.children.length > 0;
     const allChildrenCompleted = hasChildren &&
         item.children?.every((child) => child.completed);
@@ -89,6 +109,11 @@ const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
                         setText(() => "");
                     }}
                     onKeyDown={blurOnEnter}
+                    onFocusOut={(e) => {
+                        const targetText =
+                            (e.target as HTMLSpanElement).innerText;
+                        onTaskEdit(item.id, targetText);
+                    }}
                     contentEditable={!itemCompleted}
                     style={{
                         padding: "8px",
@@ -130,6 +155,7 @@ const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
                                 onToggle={onToggle}
                                 onAddChild={onAddChild}
                                 onDelete={onDelete}
+                                onTaskEdit={onTaskEdit}
                                 level={level + 1}
                             />
                         </div>
@@ -172,6 +198,10 @@ function Todos() {
                             setTodos,
                         )}
                         onDelete={handleTodoDelete(todos.value.todos, setTodos)}
+                        onTaskEdit={handleTodoEdit(
+                            todos.value.todos,
+                            setTodos,
+                        )}
                     />
                 ))}
                 <section style={{ display: "flex", "gap": "14px" }}>
