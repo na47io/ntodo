@@ -1,7 +1,9 @@
 import { Todo, todoAdd, todoAddChild, todoDelete, todoToggle } from "@/todo.ts";
 import { useContext, useState } from "preact/hooks";
 import { AppContext, State } from "@/model.ts";
-import { signal } from "@preact/signals";
+import { ClearDialog, clearDialogOpen } from "@/components/ClearDialog.tsx";
+import { DeleteDialog, deleteDialogOpen } from "@/components/DeleteDialog.tsx";
+import { compose } from "@/utils.ts";
 
 function blurOnEnter(e: KeyboardEvent) {
     if (e.key === "Enter") {
@@ -12,14 +14,6 @@ function blurOnEnter(e: KeyboardEvent) {
         }
     }
 }
-
-// heretic left-side composition
-// deno-lint-ignore ban-types
-function compose(...fns: Function[]) {
-    // deno-lint-ignore no-explicit-any
-    return (x: any) => fns.reduce((acc, fn) => fn(acc), x);
-}
-
 // take the current state and return a function that will
 // 1. get the new state by a applying the state transform (partially applied to the current state)
 // 2. set the new state
@@ -55,74 +49,6 @@ function handleTodoDelete(
 const handleClearTodos = (
     setState: (newTodos: Todo[]) => void,
 ) => setState([]);
-
-const ClearDialog = (
-    { open, onCancel, onConfirm, totalTodos }: {
-        open: boolean;
-        onCancel: () => void;
-        onConfirm: () => void;
-        totalTodos: number;
-    },
-) => {
-    const itemItems = totalTodos === 1 ? "item" : "items";
-    return (
-        <dialog open={open}>
-            <article>
-                <h6>Clear {totalTodos} {itemItems}</h6>
-                <p>
-                    ⚠️ Be <strong>careful</strong>! There is no turning back.
-                </p>
-                <footer>
-                    <button
-                        onClick={onCancel}
-                        class="secondary"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="outline"
-                        onClick={compose(onConfirm, onCancel)}
-                    >
-                        Clear {totalTodos} {itemItems}
-                    </button>
-                </footer>
-            </article>
-        </dialog>
-    );
-};
-
-const DeleteDialog = (
-    { open, onCancel, onConfirm }: {
-        open: boolean;
-        onCancel: () => void;
-        onConfirm: () => void;
-    },
-) => {
-    return (
-        <dialog open={open}>
-            <article>
-                <h6>Delete task (and its children!)</h6>
-                <p>
-                    ⚠️ Be <strong>careful</strong>! There is no turning back.
-                </p>
-                <footer>
-                    <button
-                        onClick={onCancel}
-                        class="secondary"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        className="outline"
-                        onClick={compose(onConfirm, onCancel)}
-                    >
-                        Delete Task
-                    </button>
-                </footer>
-            </article>
-        </dialog>
-    );
-};
 
 const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
     item: Todo;
@@ -213,18 +139,6 @@ const TodoItem = ({ item, onToggle, onAddChild, onDelete, level = 0 }: {
         </div>
     );
 };
-const clearDialogOpen = signal(false);
-
-interface DeleteDialogProps {
-    open: boolean;
-    id: string;
-    childTaskCount: number;
-}
-const deleteDialogOpen = signal<DeleteDialogProps>({
-    open: false,
-    id: "",
-    childTaskCount: 0,
-});
 
 function Todos() {
     const state = useContext(AppContext);
