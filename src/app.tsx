@@ -21,27 +21,36 @@ function blurOnEnter(e: KeyboardEvent) {
         }
     }
 }
+
 // take the current state and return a function that will
 // 1. get the new state by a applying the state transform (partially applied to the current state)
 // 2. set the new state
-const handleTodoToggle = (
+function handleTodoToggle(
     todos: Todo[],
     setState: (newTodos: Todo[]) => void,
-) => compose(todoToggle.bind(null, todos), setState);
+): (id: string) => void {
+    return compose(todoToggle.bind(null, todos), setState);
+}
 
-const handleTodoAddChild = (
+function handleTodoAddChild(
     todos: Todo[],
     setState: (newTodos: Todo[]) => void,
-) => compose(
-    todoAddChild.bind(null, todos),
-    setState,
-);
+): (id: string) => void {
+    return compose(
+        todoAddChild.bind(null, todos),
+        setState,
+    );
+}
 
-const handleAddTodo = (todos: Todo[], setState: (newTodos: Todo[]) => void) =>
-    compose(
+function handleAddTodo(
+    todos: Todo[],
+    setState: (newTodos: Todo[]) => void,
+): () => void {
+    return compose(
         todoAdd.bind(null, todos),
         setState,
     );
+}
 
 function handleTodoDelete(
     todos: Todo[],
@@ -63,9 +72,9 @@ function handleTodoEdit(
     );
 }
 
-const handleClearTodos = (
-    setState: (newTodos: Todo[]) => void,
-) => setState([]);
+function handleClearTodos(setState: (newTodos: Todo[]) => void): void {
+    return setState([]);
+}
 
 const TodoItem = (
     { item, onToggle, onAddChild, onDelete, onTaskEdit, level = 0 }: {
